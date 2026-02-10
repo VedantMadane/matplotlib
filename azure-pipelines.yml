@@ -98,7 +98,7 @@ stages:
               set -e
               SESSION_ID=$(python -c "import uuid; print(uuid.uuid4(), end='')")
               echo "Coverage session ID: ${SESSION_ID}"
-              VS=$(ls -d /c/Program\ Files*/Microsoft\ Visual\ Studio/*/Enterprise)
+              VS=$(ls -d /c/Program\ Files*/Microsoft\ Visual\ Studio/*/Enterprise | head -n 1)
               echo "Visual Studio: ${VS}"
               DIR="$VS/Common7/IDE/Extensions/Microsoft/CodeCoverage.Console"
               # This is for MSVC 2022 (on windows-latest).
@@ -135,7 +135,7 @@ stages:
             displayName: 'pytest'
 
           - bash: |
-              if [[ -f extensions.coverage ]]; then
+              if [[ -f extensions.coverage ]] && [[ -n "$VS_COVERAGE_TOOL" ]]; then
                 # For MSVC 2019.
                 "$VS_COVERAGE_TOOL" analyze -output:extensions.xml \
                   -include_skipped_functions -include_skipped_modules \
