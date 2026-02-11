@@ -95,13 +95,13 @@ jobs:
             pygobject-ver: '<3.52.0'
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548  # v6.1.0
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -184,7 +184,7 @@ jobs:
           esac
 
       - name: Cache pip
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb  # v5.0.1
         if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pip
@@ -192,7 +192,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-py${{ matrix.python-version }}-pip-
       - name: Cache pip
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb  # v5.0.1
         if: startsWith(runner.os, 'macOS')
         with:
           path: ~/Library/Caches/pip
@@ -200,7 +200,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-py${{ matrix.python-version }}-pip-
       - name: Cache ccache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb  # v5.0.1
         with:
           path: |
             ~/.ccache
@@ -208,7 +208,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-py${{ matrix.python-version }}-ccache-
       - name: Cache Matplotlib
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb  # v5.0.1
         with:
           path: |
             ~/.cache/matplotlib
@@ -380,19 +380,13 @@ jobs:
               # filter mismatch and unused-entity errors detected by lcov 2.x
               LCOV_IGNORE_ERRORS='mismatch,unused'
             fi
-            lcov --rc lcov_branch_coverage=1 --ignore-errors "$LCOV_IGNORE_ERRORS" \
+            lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
               --capture --directory . --output-file coverage.info
-            lcov --rc lcov_branch_coverage=1 --ignore-errors "$LCOV_IGNORE_ERRORS" \
+            lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
               --output-file coverage.info --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
-            lcov --rc lcov_branch_coverage=1 --ignore-errors "$LCOV_IGNORE_ERRORS" \
+            lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
               --list coverage.info
             find . -name '*.gc*' -delete
-          else
-            xcrun llvm-profdata merge -sparse default.*.profraw \
-              -o default.profdata
-            xcrun llvm-cov export -format="lcov" build/*/src/*.so \
-              -instr-profile default.profdata > info.lcov
-          fi
           else
             xcrun llvm-profdata merge -sparse default.*.profraw \
               -o default.profdata
